@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:44:32 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/24 22:05:23 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/24 22:12:10 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ typedef struct s_philo
 
 int			philo_error(void);
 long long	philo_atoi(char *str);
-void		*philo_free(t_philo *philos, t_arg *arg, int n, int flag);
 char		*philo_itoa(long long n);
+void		*philo_free(t_philo *philos, t_arg *arg, int n, int flag);
 int			philo_strlen(char *str);
 void		philo_action(t_philo *philo);
 int			philo_print(t_philo *philo, long long time, char *str);
