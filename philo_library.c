@@ -6,121 +6,102 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:51:43 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/20 22:32:50 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/24 21:50:03 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-char	*sign_check(char *str, long long *minus)
+void	philo_print_mutex(t_philo *philo, long long time, char *str)
 {
-	if (*str == '-' || *str == '+')
-	{
-		if (*str == '-')
-			*minus = *minus * -1;
-		str++;
-	}
-	return (str);
+	pthread_mutex_lock(philo->print_mutex);
+	pthread_mutex_lock(philo->dead_mutex);
+	if (philo_is_dead_n(philo, 0))
+		philo_change_dead(philo, philo_print(philo, time, str));
+	pthread_mutex_unlock(philo->dead_mutex);
+	pthread_mutex_unlock(philo->print_mutex);
 }
 
-long long	overflow_check(long long num, long long i)
+int	philo_print(t_philo *philo, long long time, char *str)
 {
-	if (i > 10)
-		return (-1);
-	if (num < -2147483648 || num > 2147483647)
-		return (-1);
-	return (num);
+	char	*time_str;
+	char	*name;
+	int		flag;
+
+	flag = 0;
+	time_str = philo_itoa(time);
+	name = philo_itoa(philo->philo_num);
+	if (time_str == NULL)
+		flag = 2;
+	else if (write(1, time_str, philo_strlen(time_str)) == -1)
+		flag = 2;
+	else if (write(1, "timestamp_in_ms ", 16) == -1)
+		flag = 2;
+	else if (write(1, str, philo_strlen(str)) == -1)
+		flag = 2;
+	return (flag);
 }
 
-long long	philo_atoi(char *str)
+int	philo_error(void)
 {
-	long long	minus;
-	long long	i;
-	long long	num;
-
-	i = 0;
-	num = 0;
-	minus = 1;
-	while (*str >= 9 && *str <= 13)
-		str++;
-	str = sign_check(str, &minus);
-	if (!(*str >= '0' && *str <= '9'))
-		return (-1);
-	while (*str >= '0' && *str <= '9')
-	{
-		num = num * 10 + *str - '0';
-		str++;
-		if (num > 0)
-			i++;
-	}
-	return (overflow_check(num * minus, i));
+	write(1, "error\n", 6);
+	return (1);
 }
 
-void	*philo_error(t_philo *philos, t_arg *arg, int n)
+void	philo_free_mutex(pthread_mutex_t *mutex)
+{
+	pthread_mutex_destroy(mutex);
+	free(mutex);
+}
+
+void	*philo_free(t_philo *philos, t_arg *arg, int n, int flag)
 {
 	int	i;
 
 	free(arg);
+	if (n != -1)
+		philo_free_mutex(philos[1].print_mutex);
 	i = 1;
 	while (i <= n)
-	{
-		pthread_mutex_unlock(philos[i].left_fork);
-		pthread_metex_destroy(philos[i].left_fork);
-		i++;
-	}
+		philo_free_mutex(philos[i++].left_fork);
+	if (flag == 3)
+		philo_free_mutex(philos[i].left_fork);
+	else if (flag == 1 || flag == 2)
+		free(philos[i].left_fork);
+	i = 1;
+	while (i <= n)
+		philo_free_mutex(philos[i].dead_mutex);
+	if (flag > 1)
+		free(philos[i].dead_mutex);
 	free(philos);
 	return (NULL);
 }
-int	get_len(long long n)
-{
-	int	size;
 
-	size = 0;
-	if (n == 0)
-		return (1);
-	if (n < 0)
-		size++;
-	while (n)
-	{
-		n = n / 10;
-		size++;
-	}
-	return (size);
+int	philo_is_dead_n(t_philo *philo, int n)
+{
+	int	flag;
+
+	pthread_mutex_lock(philo->dead_mutex);
+	if (philo->dead == n)
+		flag = 1;
+	else
+		flag = 0;
+	pthread_mutex_unlock(philo->dead_mutex);
+	return (flag);
 }
 
-char	*philo_itoa(long long n)
+void	philo_change_dead(t_philo *philo, int n)
 {
-	char			*s;
-	long long		num;
-	int				size;
-
-	num = n;
-	size = get_len(n);
-	s = malloc(sizeof(char) * (size + 1));
-	if (s == NULL)
-		return (NULL);
-	if (num == 0)
-		s[0] = '0';
-	if (num < 0)
-	{
-		s[0] = '-';
-		num = -num;
-	}
-	s[size--] = 0;
-	while (num)
-	{
-		s[size--] = num % 10 + '0';
-		num = num / 10;
-	}
-	return (s);
+	pthread_mutex_lock(philo->dead_mutex);
+	philo->dead = n;
+	pthread_mutex_unlock(philo->dead_mutex);
 }
 
-int	philo_strlen(char *str)
+void	philo_join(t_philo *philos)
 {
 	int	i;
 
-	i = 0;
-	while (str[i] != '\n')
-		i++;
-	return (i);
+	i = 1;
+	while (i <= philos->arg->number_of_philo)
+		pthread_join(philos[i++].thread_id, NULL);
 }
