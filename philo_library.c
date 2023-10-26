@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:51:43 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 17:55:58 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 20:37:24 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	philo_print(t_philo *philo, long long time, char *str)
 		flag = 2;
 	else if (write(1, time_str, philo_strlen(time_str)) == -1)
 		flag = 2;
-	else if (write(1, " ms ", 4) == -1)
+	else if (write(1, " ", 1) == -1)
 		flag = 2;
 	else if (write(1, name, philo_strlen(name)) == -1)
 		flag = 2;

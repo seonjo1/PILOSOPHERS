@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:52:02 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 17:19:27 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 20:40:23 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ int	philo_check_one_cycle(t_philo *philos, int num_of_philo, int i, int *flag)
 			pthread_mutex_unlock(philos[i].print_mutex);
 			break ;
 		}
+		i++;
 	}
 	return (finish_flag | exit_flag);
 }
