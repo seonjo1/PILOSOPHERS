@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:44:32 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 17:21:05 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 17:47:48 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void		*philo_free(t_philo *philos, t_arg *arg, int n, int flag);
 int			philo_strlen(char *str);
 void		philo_action(t_philo *philo);
 int			philo_print(t_philo *philo, long long time, char *str);
-void		philo_print_mutex(t_philo *philo, long long time, char *str);
+long long	philo_print_mutex(t_philo *philo, char *str);
 int			philo_monitoring(t_philo *philos, int num_of_philo);
 void		philo_join(t_philo *philos, t_arg *arg);
 void		philo_change_dead(t_philo *philo, int n);

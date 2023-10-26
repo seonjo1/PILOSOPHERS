@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:51:43 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 17:44:12 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 17:55:58 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,12 +95,13 @@ void	philo_chage_last_eat_time(t_philo *philo, long long time)
 {
 	pthread_mutex_lock(philo->resouce_mutex);
 	philo->last_eating_time = time;
-	pthread_mutex_unlock(philo->resouce_mutex);	
+	pthread_mutex_unlock(philo->resouce_mutex);
 }
 
 long long	philo_get_last_eat_time(t_philo *philo)
 {
 	long long	time;
+
 	pthread_mutex_lock(philo->resouce_mutex);
 	time = philo->last_eating_time;
 	pthread_mutex_unlock(philo->resouce_mutex);
@@ -123,10 +124,20 @@ void	philo_join(t_philo *philos, t_arg *arg)
 		pthread_join(philos[i++].thread_id, NULL);
 }
 
-long long	philo_print_mutex(t_philo *philo, long long time, char *str)
+long long	philo_print_mutex(t_philo *philo, char *str)
 {
+	struct timeval	tv;
+	long long		time;
+
 	pthread_mutex_lock(philo->print_mutex);
+	if (gettimeofday(&tv, NULL) != 0)
+	{
+		philo_change_dead(philo, 2);
+		return (-1);
+	}
+	time = philo_get_time(tv.tv_sec, tv.tv_usec);
 	if (philo_is_dead_n(philo, 0))
 		philo_change_dead(philo, philo_print(philo, time, str));
 	pthread_mutex_unlock(philo->print_mutex);
+	return (time);
 }

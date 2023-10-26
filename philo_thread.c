@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:32:04 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 17:44:22 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 17:54:23 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,17 @@ void	philo_sleeping(t_philo *philo, int sleep_time)
 		philo_change_dead(philo, 2);
 	if (philo_is_dead_n(philo, 0))
 	{
-		time = philo_get_time(tv.tv_sec, tv.tv_usec);
-		philo_print_mutex(philo, time, "is sleeping\n");
-		limit = time + philo->arg->time_to_sleep;
-		while (philo_is_dead_n(philo, 0) && limit > time)
+		time = philo_print_mutex(philo, "is sleeping\n");
+		if (time > 0)
 		{
-			usleep(sleep_time);
-			if (gettimeofday(&tv, NULL) != 0)
-				philo_change_dead(philo, 2);
-			time = philo_get_time(tv.tv_sec, tv.tv_usec);
+			limit = time + philo->arg->time_to_sleep;
+			while (philo_is_dead_n(philo, 0) && limit > time)
+			{
+				usleep(sleep_time);
+				if (gettimeofday(&tv, NULL) != 0)
+					philo_change_dead(philo, 2);
+				time = philo_get_time(tv.tv_sec, tv.tv_usec);
+			}
 		}
 	}
 }
@@ -45,43 +47,37 @@ void	philo_eating(t_philo *philo, int sleep_time)
 		philo_change_dead(philo, 2);
 	if (philo_is_dead_n(philo, 0))
 	{
-		time = philo_get_time(tv.tv_sec, tv.tv_usec);
-		philo_print_mutex(philo, time, "is eating\n");
-		philo_chage_last_eat_time(philo, time);
-		limit = time + philo->arg->time_to_eat;
-		while (philo_is_dead_n(philo, 0) && limit > time)
+		time = philo_print_mutex(philo, "is eating\n");
+		if (time > 0)
 		{
-			usleep(sleep_time);
-			if (gettimeofday(&tv, NULL) != 0)
-				philo_change_dead(philo, 2);
-			time = philo_get_time(tv.tv_sec, tv.tv_usec);
-		}
-		if (philo->arg->is_have_eat_num_limit == 1)
-			philo->eat_num++;
+			philo_chage_last_eat_time(philo, time);
+			limit = time + philo->arg->time_to_eat;
+			while (philo_is_dead_n(philo, 0) && limit > time)
+			{
+				usleep(sleep_time);
+				if (gettimeofday(&tv, NULL) != 0)
+					philo_change_dead(philo, 2);
+				time = philo_get_time(tv.tv_sec, tv.tv_usec);
+			}
+			if (philo->arg->is_have_eat_num_limit == 1)
+				philo->eat_num++;
+		}	
 	}
 }
 
 void	philo_hold_fork(t_philo *philo, int right)
 {
-	struct timeval	tv;
-
 	if (right)
 	{
 		pthread_mutex_lock(philo->right_fork);
-		if (gettimeofday(&tv, NULL) != 0)
-			philo_change_dead(philo, 2);
-		else if (philo_is_dead_n(philo, 0))
-			philo_print_mutex(philo, philo_get_time(tv.tv_sec, tv.tv_usec), \
-						"has taken a fork\n");
+		if (philo_is_dead_n(philo, 0))
+			philo_print_mutex(philo, "has taken a fork\n");
 	}
 	else
 	{
 		pthread_mutex_lock(philo->left_fork);
-		if (gettimeofday(&tv, NULL) != 0)
-			philo_change_dead(philo, 2);
-		else if (philo_is_dead_n(philo, 0))
-			philo_print_mutex(philo, philo_get_time(tv.tv_sec, tv.tv_usec), \
-						"has taken a fork\n");
+		if (philo_is_dead_n(philo, 0))
+			philo_print_mutex(philo, "has taken a fork\n");
 	}
 }
 
@@ -95,15 +91,9 @@ void	philo_release_fork(t_philo *philo, int right)
 
 void	philo_action(t_philo *philo)
 {
-	struct timeval	tv;
-
 	while (philo_is_dead_n(philo, 0))
 	{
-		if (gettimeofday(&tv, NULL) != 0)
-			philo_change_dead(philo, 2);
-		else
-			philo_print_mutex(philo, philo_get_time(tv.tv_sec, tv.tv_usec), \
-								"is thinking\n");
+		philo_print_mutex(philo, "is thinking\n");
 		philo_hold_fork(philo, philo->philo_num % 2);
 		philo_hold_fork(philo, !(philo->philo_num % 2));
 		philo_eating(philo, philo->arg->number_of_philo);
