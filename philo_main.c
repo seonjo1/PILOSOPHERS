@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:43:58 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/24 21:54:28 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 12:31:28 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	*arg_check(t_arg *arg)
 {
 	if (arg->number_of_philo <= 0 || arg->time_to_die <= 0 || \
-		arg->time_to_sleep <= 0 || arg->time_to_eat <= 0 || \
+		arg->time_to_eat <= 0 || arg->time_to_sleep <= 0 || \
 		arg->eat_num_limit <= 0)
 	{
 		free(arg);
@@ -31,11 +31,6 @@ void	*arg_setting(int argc, char **argv)
 	arg = malloc(sizeof(t_arg));
 	if (arg == NULL)
 		return (NULL);
-	if (philo_atoi(argv[2]) <= 0)
-	{
-		free(arg);
-		return (NULL);
-	}
 	arg->number_of_philo = philo_atoi(argv[1]);
 	arg->time_to_die = philo_atoi(argv[2]);
 	arg->time_to_eat = philo_atoi(argv[3]);
@@ -53,13 +48,14 @@ void	*arg_setting(int argc, char **argv)
 	return (arg_check(arg));
 }
 
-void	*setting_philo(t_philo *philos, t_arg *arg, pthread_mutex_t *print, int i)
+void	*setting_philo(t_philo *philos, t_arg *arg, \
+						pthread_mutex_t *print_mutex, int i)
 {
 	philos[i].philo_num = i;
 	philos[i].arg = arg;
 	philos[i].eat_num = 0;
 	philos[i].dead = 0;
-	philos[i].print_mutex = print;
+	philos[i].print_mutex = print_mutex;
 	philos[i].left_fork = malloc(sizeof(pthread_mutex_t));
 	if (philos[i].left_fork == NULL)
 		return (philo_free(philos, arg, i - 1, 0));
@@ -75,42 +71,43 @@ void	*setting_philo(t_philo *philos, t_arg *arg, pthread_mutex_t *print, int i)
 
 void	*make_philos(t_philo *philos, t_arg *arg)
 {
-	pthread_mutex_t	*print;
+	pthread_mutex_t	*print_mutex;
 	int				i;
 
-	print = malloc(sizeof(pthread_mutex_t));
-	if (print == NULL || pthread_mutex_init(print, NULL) != 0)
-		philo_free(philos, arg, -1, -1);
+	print_mutex = malloc(sizeof(pthread_mutex_t));
+	if (print_mutex == NULL)
+		philo_free(philos, arg, 0, -2);
+	if (pthread_mutex_init(print_mutex, NULL) != 0)
+		philo_free(philos, arg, 0, -1);
 	i = 1;
 	while (i <= arg->number_of_philo)
-		if (setting_philo(philos, arg, print, i++) == NULL)
+		if (setting_philo(philos, arg, print_mutex, i++) == NULL)
 			return (NULL);
 	i = 1;
 	while (i <= arg->number_of_philo)
 	{
-		philos[i].right_fork = philos[(i % philos[i].philo_num) + 1].left_fork;
+		philos[i].right_fork = philos[(i % arg->number_of_philo) + 1].left_fork;
 		i++;
 	}
 	return (philos);
 }
 
-void	*start_philos(t_philo *philos, int p_num)
+void	*start_philos(t_philo *philos, t_arg *arg, int p_num)
 {
 	struct timeval	tv;
 	int				i;
 
 	if (gettimeofday(&tv, NULL) != 0)
-		return (philo_free(philos, philos[1].arg, p_num, 0));
+		return (philo_free(philos, arg, p_num, 0));
 	i = 1;
 	while (i <= p_num)
 	{
-		philos[i].start_time = (long long)tv.tv_sec * 1000;
-		philos[i].last_eating_time = (long long)tv.tv_sec * 1000;
+		philos[i].start_time = philo_get_time(tv.tv_sec, tv.tv_usec);
+		philos[i].last_eating_time = philo_get_time(tv.tv_sec, tv.tv_usec);
 		if (pthread_create(&(philos[i].thread_id), NULL, (void *)philo_action, \
 		&philos[i]) != 0)
-			return (philo_free(philos, philos[1].arg, p_num, 0));
+			return (philo_free(philos, arg, p_num, 0));
 		i++;
-		printf("good\n");
 	}
 	return (philos);
 }
@@ -129,7 +126,7 @@ int	main(int argc, char **argv)
 	philos = malloc(sizeof(t_philo) * (arg->number_of_philo + 1));
 	if (make_philos(philos, arg) == NULL)
 		return (philo_error());
-	if (start_philos(philos, arg->number_of_philo) == NULL)
+	if (start_philos(philos, arg, arg->number_of_philo) == NULL)
 		return (philo_error());
 	errflag = philo_monitoring(philos, arg);
 	philo_join(philos);

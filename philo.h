@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:44:32 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/24 22:12:10 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 12:25:51 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@
 
 typedef struct s_arg
 {
+	int			number_of_philo;
 	long long	time_to_die;
 	long long	time_to_eat;
 	long long	time_to_sleep;
-	int			number_of_philo;
 	int			eat_num_limit;
 	int			is_have_eat_num_limit;
 }t_arg;
@@ -56,5 +56,6 @@ int			philo_monitoring(t_philo *philos, t_arg *arg);
 void		philo_join(t_philo *philos);
 void		philo_change_dead(t_philo *philo, int n);
 int			philo_is_dead_n(t_philo *philo, int n);
+long long	philo_get_time(int sec, int usec);
 
 #endif

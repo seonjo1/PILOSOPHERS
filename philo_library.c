@@ -6,20 +6,15 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:51:43 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/24 21:50:03 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 12:31:11 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	philo_print_mutex(t_philo *philo, long long time, char *str)
+long long	philo_get_time(int sec, int usec)
 {
-	pthread_mutex_lock(philo->print_mutex);
-	pthread_mutex_lock(philo->dead_mutex);
-	if (philo_is_dead_n(philo, 0))
-		philo_change_dead(philo, philo_print(philo, time, str));
-	pthread_mutex_unlock(philo->dead_mutex);
-	pthread_mutex_unlock(philo->print_mutex);
+	return ((long long)(sec * 1000) + (long long)(usec / 1000));
 }
 
 int	philo_print(t_philo *philo, long long time, char *str)
@@ -29,13 +24,17 @@ int	philo_print(t_philo *philo, long long time, char *str)
 	int		flag;
 
 	flag = 0;
-	time_str = philo_itoa(time);
+	time_str = philo_itoa(time - philo->start_time);
 	name = philo_itoa(philo->philo_num);
 	if (time_str == NULL)
 		flag = 2;
 	else if (write(1, time_str, philo_strlen(time_str)) == -1)
 		flag = 2;
-	else if (write(1, "timestamp_in_ms ", 16) == -1)
+	else if (write(1, " ms ", 4) == -1)
+		flag = 2;
+	else if (write(1, name, philo_strlen(name)) == -1)
+		flag = 2;
+	else if (write(1, " ", 1) == -1)
 		flag = 2;
 	else if (write(1, str, philo_strlen(str)) == -1)
 		flag = 2;
@@ -59,7 +58,9 @@ void	*philo_free(t_philo *philos, t_arg *arg, int n, int flag)
 	int	i;
 
 	free(arg);
-	if (n != -1)
+	if (n == -1)
+		free(philos[1].print_mutex);
+	else if (n < 0)
 		philo_free_mutex(philos[1].print_mutex);
 	i = 1;
 	while (i <= n)
@@ -70,7 +71,7 @@ void	*philo_free(t_philo *philos, t_arg *arg, int n, int flag)
 		free(philos[i].left_fork);
 	i = 1;
 	while (i <= n)
-		philo_free_mutex(philos[i].dead_mutex);
+		philo_free_mutex(philos[i++].dead_mutex);
 	if (flag > 1)
 		free(philos[i].dead_mutex);
 	free(philos);
@@ -104,4 +105,12 @@ void	philo_join(t_philo *philos)
 	i = 1;
 	while (i <= philos->arg->number_of_philo)
 		pthread_join(philos[i++].thread_id, NULL);
+}
+
+void	philo_print_mutex(t_philo *philo, long long time, char *str)
+{
+	pthread_mutex_lock(philo->print_mutex);
+	if (philo_is_dead_n(philo, 0))
+		philo_change_dead(philo, philo_print(philo, time, str));
+	pthread_mutex_unlock(philo->print_mutex);
 }

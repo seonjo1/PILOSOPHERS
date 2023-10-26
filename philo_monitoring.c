@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:52:02 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/24 21:53:51 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 12:27:30 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,8 @@ int	philo_monitoring(t_philo *philos, t_arg *arg)
 				if (philo_find_err(philos) == 1)
 					err_flag = 2;
 				else
-					philo_print(&(philos[i]), tv.tv_sec * 1000, "died\n");
+					philo_print(&(philos[i]), \
+								philo_get_time(tv.tv_sec, tv.tv_usec), "died\n");
 			}
 			else if (philo_is_dead_n(&(philos[i]), 2))
 			{

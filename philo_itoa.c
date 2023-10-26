@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:35:31 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/24 17:37:27 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 11:35:26 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	philo_strlen(char *str)
 	int	i;
 
 	i = 0;
-	while (str[i] != '\n')
+	while (str[i] != '\0')
 		i++;
 	return (i);
 }
