@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:44:32 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 12:25:51 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 17:21:05 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ typedef struct s_philo
 	pthread_t		thread_id;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	*dead_mutex;
 	pthread_mutex_t	*print_mutex;
+	pthread_mutex_t	*resouce_mutex;
 	t_arg			*arg;
 	int				philo_num;
 	int				eat_num;
@@ -52,10 +52,12 @@ int			philo_strlen(char *str);
 void		philo_action(t_philo *philo);
 int			philo_print(t_philo *philo, long long time, char *str);
 void		philo_print_mutex(t_philo *philo, long long time, char *str);
-int			philo_monitoring(t_philo *philos, t_arg *arg);
-void		philo_join(t_philo *philos);
+int			philo_monitoring(t_philo *philos, int num_of_philo);
+void		philo_join(t_philo *philos, t_arg *arg);
 void		philo_change_dead(t_philo *philo, int n);
 int			philo_is_dead_n(t_philo *philo, int n);
 long long	philo_get_time(int sec, int usec);
+void		philo_chage_last_eat_time(t_philo *philo, long long time);
+long long	philo_get_last_eat_time(t_philo *philo);
 
 #endif

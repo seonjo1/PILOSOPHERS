@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:51:43 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 12:31:11 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 17:44:12 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,9 @@ void	*philo_free(t_philo *philos, t_arg *arg, int n, int flag)
 		free(philos[i].left_fork);
 	i = 1;
 	while (i <= n)
-		philo_free_mutex(philos[i++].dead_mutex);
+		philo_free_mutex(philos[i++].resouce_mutex);
 	if (flag > 1)
-		free(philos[i].dead_mutex);
+		free(philos[i].resouce_mutex);
 	free(philos);
 	return (NULL);
 }
@@ -82,32 +82,48 @@ int	philo_is_dead_n(t_philo *philo, int n)
 {
 	int	flag;
 
-	pthread_mutex_lock(philo->dead_mutex);
+	pthread_mutex_lock(philo->resouce_mutex);
 	if (philo->dead == n)
 		flag = 1;
 	else
 		flag = 0;
-	pthread_mutex_unlock(philo->dead_mutex);
+	pthread_mutex_unlock(philo->resouce_mutex);
 	return (flag);
+}
+
+void	philo_chage_last_eat_time(t_philo *philo, long long time)
+{
+	pthread_mutex_lock(philo->resouce_mutex);
+	philo->last_eating_time = time;
+	pthread_mutex_unlock(philo->resouce_mutex);	
+}
+
+long long	philo_get_last_eat_time(t_philo *philo)
+{
+	long long	time;
+	pthread_mutex_lock(philo->resouce_mutex);
+	time = philo->last_eating_time;
+	pthread_mutex_unlock(philo->resouce_mutex);
+	return (time);
 }
 
 void	philo_change_dead(t_philo *philo, int n)
 {
-	pthread_mutex_lock(philo->dead_mutex);
+	pthread_mutex_lock(philo->resouce_mutex);
 	philo->dead = n;
-	pthread_mutex_unlock(philo->dead_mutex);
+	pthread_mutex_unlock(philo->resouce_mutex);
 }
 
-void	philo_join(t_philo *philos)
+void	philo_join(t_philo *philos, t_arg *arg)
 {
 	int	i;
 
 	i = 1;
-	while (i <= philos->arg->number_of_philo)
+	while (i <= arg->number_of_philo)
 		pthread_join(philos[i++].thread_id, NULL);
 }
 
-void	philo_print_mutex(t_philo *philo, long long time, char *str)
+long long	philo_print_mutex(t_philo *philo, long long time, char *str)
 {
 	pthread_mutex_lock(philo->print_mutex);
 	if (philo_is_dead_n(philo, 0))

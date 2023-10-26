@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:32:04 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 13:27:56 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 17:44:22 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	philo_eating(t_philo *philo, int sleep_time)
 	{
 		time = philo_get_time(tv.tv_sec, tv.tv_usec);
 		philo_print_mutex(philo, time, "is eating\n");
+		philo_chage_last_eat_time(philo, time);
 		limit = time + philo->arg->time_to_eat;
 		while (philo_is_dead_n(philo, 0) && limit > time)
 		{

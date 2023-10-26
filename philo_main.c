@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:43:58 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 12:31:28 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/26 17:21:49 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,12 @@ void	*setting_philo(t_philo *philos, t_arg *arg, \
 	philos[i].left_fork = malloc(sizeof(pthread_mutex_t));
 	if (philos[i].left_fork == NULL)
 		return (philo_free(philos, arg, i - 1, 0));
-	philos[i].dead_mutex = malloc(sizeof(pthread_mutex_t));
-	if (philos[i].dead_mutex == NULL)
+	philos[i].resouce_mutex = malloc(sizeof(pthread_mutex_t));
+	if (philos[i].resouce_mutex == NULL)
 		return (philo_free(philos, arg, i - 1, 1));
 	if (pthread_mutex_init(philos[i].left_fork, NULL) != 0)
 		return (philo_free(philos, arg, i - 1, 2));
-	if (pthread_mutex_init(philos[i].dead_mutex, NULL) != 0)
+	if (pthread_mutex_init(philos[i].resouce_mutex, NULL) != 0)
 		return (philo_free(philos, arg, i - 1, 3));
 	return (philos);
 }
@@ -128,8 +128,8 @@ int	main(int argc, char **argv)
 		return (philo_error());
 	if (start_philos(philos, arg, arg->number_of_philo) == NULL)
 		return (philo_error());
-	errflag = philo_monitoring(philos, arg);
-	philo_join(philos);
+	errflag = philo_monitoring(philos, arg->number_of_philo);
+	philo_join(philos, arg);
 	philo_free(philos, arg, arg->number_of_philo, 0);
 	return (errflag);
 }
