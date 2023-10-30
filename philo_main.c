@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:43:58 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 17:21:49 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/30 19:04:40 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,19 @@ void	*setting_philo(t_philo *philos, t_arg *arg, \
 	return (philos);
 }
 
+void	*if_one_philo(t_philo *philos)
+{
+	philos[1].right_fork = malloc(sizeof(pthread_mutex_t));
+	if (philos[1].right_fork == NULL)
+		return (NULL);
+	if (pthread_mutex_init(philos[1].right_fork, NULL) != 0)
+	{
+		free(philos[1].right_fork);
+		return (NULL);
+	}
+	return (philos);
+}
+
 void	*make_philos(t_philo *philos, t_arg *arg)
 {
 	pthread_mutex_t	*print_mutex;
@@ -84,6 +97,8 @@ void	*make_philos(t_philo *philos, t_arg *arg)
 		if (setting_philo(philos, arg, print_mutex, i++) == NULL)
 			return (NULL);
 	i = 1;
+	if (arg->number_of_philo == 1)
+		return (if_one_philo(philos));
 	while (i <= arg->number_of_philo)
 	{
 		philos[i].right_fork = philos[(i % arg->number_of_philo) + 1].left_fork;
@@ -91,24 +106,44 @@ void	*make_philos(t_philo *philos, t_arg *arg)
 	}
 	return (philos);
 }
-
-void	*start_philos(t_philo *philos, t_arg *arg, int p_num)
+void	start_philos(t_philo *philos, t_arg *arg)
 {
 	struct timeval	tv;
-	int				i;
 
 	if (gettimeofday(&tv, NULL) != 0)
-		return (philo_free(philos, arg, p_num, 0));
+	{
+		arg->start_time = 0;
+		philos[1].dead = 2;
+	}
+	else
+		arg->start_time = philo_get_time(tv.tv_sec, tv.tv_usec);
+	if (arg->number_of_philo == 1)
+		pthread_mutex_lock(philos[1].right_fork);
+	pthread_mutex_unlock(arg->start_mutex);
+}
+
+void	*ready_philos(t_philo *philos, t_arg *arg, int p_num)
+{
+	int	i;
+
+	arg->start_mutex = malloc(sizeof(pthread_mutex_t));
+	if (arg->start_mutex == NULL)
+		return (NULL);
+	if (pthread_mutex_init(arg->start_mutex, NULL) != 0)
+	{
+		free(arg->start_mutex);
+		return (NULL);
+	}
+	pthread_mutex_lock(arg->start_mutex);
 	i = 1;
 	while (i <= p_num)
 	{
-		philos[i].start_time = philo_get_time(tv.tv_sec, tv.tv_usec);
-		philos[i].last_eating_time = philo_get_time(tv.tv_sec, tv.tv_usec);
 		if (pthread_create(&(philos[i].thread_id), NULL, (void *)philo_action, \
 		&philos[i]) != 0)
 			return (philo_free(philos, arg, p_num, 0));
 		i++;
 	}
+	start_philos(philos, arg);
 	return (philos);
 }
 
@@ -119,17 +154,19 @@ int	main(int argc, char **argv)
 	int		errflag;
 
 	if (!(argc == 5 || argc == 6))
-		return (1);
+		return (philo_error());
 	arg = arg_setting(argc, argv);
 	if (arg == NULL)
 		return (philo_error());
 	philos = malloc(sizeof(t_philo) * (arg->number_of_philo + 1));
 	if (make_philos(philos, arg) == NULL)
 		return (philo_error());
-	if (start_philos(philos, arg, arg->number_of_philo) == NULL)
+	if (ready_philos(philos, arg, arg->number_of_philo) == NULL)
 		return (philo_error());
 	errflag = philo_monitoring(philos, arg->number_of_philo);
 	philo_join(philos, arg);
 	philo_free(philos, arg, arg->number_of_philo, 0);
+	if (errflag == 1)
+		philo_error();
 	return (errflag);
 }

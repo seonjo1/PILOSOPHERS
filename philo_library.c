@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:51:43 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 20:37:24 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/30 19:52:07 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,19 @@
 
 long long	philo_get_time(int sec, int usec)
 {
-	return ((long long)(sec * 1000) + (long long)(usec / 1000));
+	return ((long long)sec * 1000L + (long long)usec / 1000L);
 }
 
-int	philo_print(t_philo *philo, long long time, char *str)
+int	philo_print(t_philo *philo, long long time, char *str, int die)
 {
 	char	*time_str;
 	char	*name;
 	int		flag;
 
 	flag = 0;
-	time_str = philo_itoa(time - philo->start_time);
+	time_str = philo_itoa(time - philo->arg->start_time);
 	name = philo_itoa(philo->philo_num);
-	if (time_str == NULL)
+	if ((die == 0 && philo_is_dead_n(philo, 0) != 1) || time_str == NULL)
 		flag = 2;
 	else if (write(1, time_str, philo_strlen(time_str)) == -1)
 		flag = 2;
@@ -65,14 +65,14 @@ void	*philo_free(t_philo *philos, t_arg *arg, int n, int flag)
 	i = 1;
 	while (i <= n)
 		philo_free_mutex(philos[i++].left_fork);
-	if (flag == 3)
+	if (i > 0 && flag == 3)
 		philo_free_mutex(philos[i].left_fork);
-	else if (flag == 1 || flag == 2)
+	else if (i > 0 && (flag == 1 || flag == 2))
 		free(philos[i].left_fork);
 	i = 1;
 	while (i <= n)
 		philo_free_mutex(philos[i++].resouce_mutex);
-	if (flag > 1)
+	if (i > 0 && flag > 1)
 		free(philos[i].resouce_mutex);
 	free(philos);
 	return (NULL);
@@ -120,6 +120,12 @@ void	philo_join(t_philo *philos, t_arg *arg)
 	int	i;
 
 	i = 1;
+	if (arg->number_of_philo == 1)
+	{
+		pthread_mutex_unlock(philos[1].right_fork);
+		pthread_mutex_destroy(philos[1].right_fork);
+		free(philos[1].right_fork);
+	}
 	while (i <= arg->number_of_philo)
 		pthread_join(philos[i++].thread_id, NULL);
 }
@@ -128,6 +134,7 @@ long long	philo_print_mutex(t_philo *philo, char *str)
 {
 	struct timeval	tv;
 	long long		time;
+	int				dead;
 
 	pthread_mutex_lock(philo->print_mutex);
 	if (gettimeofday(&tv, NULL) != 0)
@@ -137,7 +144,11 @@ long long	philo_print_mutex(t_philo *philo, char *str)
 	}
 	time = philo_get_time(tv.tv_sec, tv.tv_usec);
 	if (philo_is_dead_n(philo, 0))
-		philo_change_dead(philo, philo_print(philo, time, str));
+	{
+		dead = philo_print(philo, time, str, 0);
+		if (dead != 0)
+			philo_change_dead(philo, dead);
+	}
 	pthread_mutex_unlock(philo->print_mutex);
 	return (time);
 }

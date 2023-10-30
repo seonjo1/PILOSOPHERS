@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:44:32 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 17:47:48 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/30 18:28:47 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,14 @@
 
 typedef struct s_arg
 {
-	int			number_of_philo;
-	long long	time_to_die;
-	long long	time_to_eat;
-	long long	time_to_sleep;
-	int			eat_num_limit;
-	int			is_have_eat_num_limit;
+	int				number_of_philo;
+	long long		time_to_die;
+	long long		time_to_eat;
+	long long		time_to_sleep;
+	long long		start_time;
+	int				eat_num_limit;
+	int				is_have_eat_num_limit;
+	pthread_mutex_t	*start_mutex;
 }t_arg;
 
 typedef struct s_philo
@@ -40,7 +42,6 @@ typedef struct s_philo
 	int				philo_num;
 	int				eat_num;
 	int				dead;
-	long long		start_time;
 	long long		last_eating_time;
 }t_philo;
 
@@ -50,7 +51,7 @@ char		*philo_itoa(long long n);
 void		*philo_free(t_philo *philos, t_arg *arg, int n, int flag);
 int			philo_strlen(char *str);
 void		philo_action(t_philo *philo);
-int			philo_print(t_philo *philo, long long time, char *str);
+int			philo_print(t_philo *philo, long long time, char *str, int die);
 long long	philo_print_mutex(t_philo *philo, char *str);
 int			philo_monitoring(t_philo *philos, int num_of_philo);
 void		philo_join(t_philo *philos, t_arg *arg);

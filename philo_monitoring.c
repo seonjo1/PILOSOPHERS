@@ -6,23 +6,31 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:52:02 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/26 20:40:23 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/30 18:28:35 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	philo_find_err(t_philo *philos)
+int	philo_find_err(t_philo *philos, int num)
 {
 	int	flag;
 	int	i;
 
 	i = 1;
 	flag = 0;
-	while (i <= philos[1].arg->number_of_philo)
+	while (i <= num)
 	{
 		if (philo_is_dead_n(&(philos[i]), 0))
+		{
 			philo_change_dead(&(philos[i]), 1);
+			// pthread_mutex_lock(philos[1].print_mutex);
+			// write(1, "philo ", 6);
+			// char *str = philo_itoa(i);
+			// write(1, str, philo_strlen(str));
+			// write(1, " is dead\n", 9);
+			// pthread_mutex_unlock(philos[1].print_mutex);
+		}
 		else if (philo_is_dead_n(&(philos[i]), 2))
 			flag = 1;
 		i++;
@@ -64,12 +72,11 @@ int	philo_check_one_cycle(t_philo *philos, int num_of_philo, int i, int *flag)
 			finish_flag = 0;
 		else if (philo_is_dead_n(&(philos[i]), 3) == 0)
 		{
+			*flag = philo_find_err(philos, num_of_philo);
 			pthread_mutex_lock(philos[i].print_mutex);
 			exit_flag = 1;
-			if (philo_find_err(philos) == 1)
-				*flag = philo_error();
-			else
-				philo_print(&(philos[i]), time, "died\n");
+			if (*flag == 0)
+				philo_print(&(philos[i]), time, "died\n", 1);
 			pthread_mutex_unlock(philos[i].print_mutex);
 			break ;
 		}
@@ -81,11 +88,22 @@ int	philo_check_one_cycle(t_philo *philos, int num_of_philo, int i, int *flag)
 int	philo_monitoring(t_philo *philos, int num_of_philo)
 {
 	int	flag;
+	int	i;
 
+	i = 1;
+	while (i <= num_of_philo)
+	{
+		philos[i].last_eating_time = philos[i].arg->start_time;
+		i++;
+	}
 	flag = 0;
 	while (1)
 	{
 		if (philo_check_one_cycle(philos, num_of_philo, 1, &flag) == 1)
+		{
+			pthread_mutex_destroy(philos[1].arg->start_mutex);
+			free(philos[1].arg->start_mutex);
 			return (flag);
+		}
 	}
 }

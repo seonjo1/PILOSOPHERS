@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:34:40 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/24 17:38:54 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/30 11:26:21 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,7 @@ long long	philo_atoi(char *str)
 		if (num > 0)
 			i++;
 	}
+	if (*str != '\0')
+		return (-1);
 	return (overflow_check(num * minus, i));
 }
