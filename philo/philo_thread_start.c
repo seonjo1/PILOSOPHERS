@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:32:04 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/31 20:37:03 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/31 21:25:13 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	philo_action(t_philo *philo)
 	pthread_mutex_lock(philo->arg->start_mutex);
 	pthread_mutex_lock(philo->arg->rsc_mutex);
 	philo->last_eating_time = philo->arg->start_time;
+	philo->start = 1;
 	pthread_mutex_unlock(philo->arg->rsc_mutex);
 	pthread_mutex_unlock(philo->arg->start_mutex);
 	if (philo->philo_num % 2 == 0)
@@ -49,7 +50,7 @@ void	philo_action(t_philo *philo)
 		philo_print(philo, "is thinking\n");
 		pthread_mutex_unlock(philo->arg->rsc_mutex);
 		if (philo->arg->time_to_die > philo->arg->time_to_eat)
-			usleep((philo->arg->time_to_eat / 3) * 1000);
+			usleep(philo->arg->time_to_eat * 300);
 		else
 			usleep((philo->arg->time_to_die));
 	}

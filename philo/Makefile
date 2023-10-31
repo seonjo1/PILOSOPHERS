@@ -6,14 +6,15 @@
 #    By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/19 17:46:49 by seonjo            #+#    #+#              #
-#    Updated: 2023/10/31 20:28:38 by seonjo           ###   ########.fr        #
+#    Updated: 2023/10/31 21:19:41 by seonjo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=thread
-SRCS = philo_main.c philo_atoi.c philo_thread_start.c philo_free.c philo_library.c philo_monitoring.c philo_thread_fuc.c
+CFLAGS = -Wall -Wextra -Werror
+#  -g -fsanitize=thread
+SRCS = philo_atoi.c philo_free.c philo_library.c philo_main.c philo_monitoring.c philo_thread_fuc.c philo_thread_start.c
 OBJS = $(SRCS:.c=.o)
 
 all : $(NAME)

@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:43:58 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/31 19:24:18 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/31 21:10:56 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void	*philo_arg_setting(int argc, char **argv)
 
 void	*philo_setting_philo(t_philo *philos, t_arg *arg, int i)
 {
+	philos[i].start = 0;
 	philos[i].last_eating_time = 0;
 	philos[i].philo_num = i;
 	philos[i].arg = arg;

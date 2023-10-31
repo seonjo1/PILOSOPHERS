@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:52:02 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/31 19:57:22 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/31 21:11:58 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,36 +41,23 @@ int	philo_state_check(t_philo *philo, t_arg *arg)
 	}
 }
 
-void	philo_initiate_last_eat_time(t_philo *philos, int num_of_philo)
-{
-	int	i;
-
-	pthread_mutex_lock(philos[1].arg->rsc_mutex);
-	i = 1;
-	while (i <= num_of_philo)
-	{
-		if (philos[i].last_eating_time == 0)
-			philos[i].last_eating_time = philos[i].arg->start_time;
-		i++;
-	}
-	pthread_mutex_unlock(philos[1].arg->rsc_mutex);
-}
-
 void	philo_monitoring(t_philo *philos, t_arg *arg, int num_of_philo)
 {
 	int	i;
 
-	philo_initiate_last_eat_time(philos, num_of_philo);
 	while (1)
 	{
 		i = 1;
 		while (i <= num_of_philo)
 		{
 			pthread_mutex_lock(arg->rsc_mutex);
-			if (philo_state_check(&(philos[i]), arg) == 1)
+			if (philos[i].start)
 			{
-				pthread_mutex_unlock(arg->rsc_mutex);
-				return ;
+				if (philo_state_check(&(philos[i]), arg) == 1)
+				{
+					pthread_mutex_unlock(arg->rsc_mutex);
+					return ;
+				}
 			}
 			pthread_mutex_unlock(arg->rsc_mutex);
 			i++;

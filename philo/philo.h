@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:44:32 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/31 18:17:31 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/31 21:10:40 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_philo
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	t_arg			*arg;
+	int				start;
 	int				philo_num;
 	int				eat_num;
 	long long		last_eating_time;

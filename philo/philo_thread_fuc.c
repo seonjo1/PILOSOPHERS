@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 17:29:26 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/31 20:26:57 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/10/31 20:47:21 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ void	philo_eating(t_philo *philo, int sleep_time)
 	}
 	else
 		pthread_mutex_unlock(philo->arg->rsc_mutex);
-
 }
 
 void	philo_hold_fork(t_philo *philo, int right)
