@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:43:58 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/31 21:10:56 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/11/01 11:13:19 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	*philo_arg_check(t_arg *arg)
 		arg->time_to_eat <= 0 || arg->time_to_sleep <= 0 || \
 		(arg->is_have_eat_num_limit && arg->eat_num_limit <= 0))
 	{
-		free(arg);
+		philo_free(arg->start_mutex, arg->rsc_mutex, arg);
 		return (NULL);
 	}
 	arg->dead = 0;
