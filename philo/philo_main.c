@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:43:58 by seonjo            #+#    #+#             */
-/*   Updated: 2023/11/01 11:13:19 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/11/05 16:29:21 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 void	*philo_arg_check(t_arg *arg)
 {
+	long long	time;
+
 	if (arg->number_of_philo <= 0 || arg->time_to_die <= 0 || \
 		arg->time_to_eat <= 0 || arg->time_to_sleep <= 0 || \
 		(arg->is_have_eat_num_limit && arg->eat_num_limit <= 0))
@@ -24,6 +26,11 @@ void	*philo_arg_check(t_arg *arg)
 	arg->dead = 0;
 	arg->error = 0;
 	arg->end_philo = 0;
+	time = arg->time_to_eat - arg->time_to_sleep;
+	if (time < 0)
+		arg->must_think_time = -1;
+	else
+		arg->must_think_time = time;
 	return (arg);
 }
 

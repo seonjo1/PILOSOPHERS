@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:44:32 by seonjo            #+#    #+#             */
-/*   Updated: 2023/11/01 10:56:27 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/11/05 16:28:03 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef struct s_arg
 	long long		time_to_eat;
 	long long		time_to_sleep;
 	long long		start_time;
+	long long		must_think_time;
 	int				eat_num_limit;
 	int				is_have_eat_num_limit;
 	int				dead;

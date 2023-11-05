@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 17:29:26 by seonjo            #+#    #+#             */
-/*   Updated: 2023/10/31 20:47:21 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/11/05 17:07:43 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,16 @@ void	philo_sleeping(t_philo *philo, int sleep_time)
 		if (philo_timer(philo->arg, limit, time, sleep_time) == -1)
 			return ;
 		pthread_mutex_lock(philo->arg->rsc_mutex);
-		philo_print(philo, "is thinking\n");
+		time = philo_print(philo, "is thinking\n");
 		pthread_mutex_unlock(philo->arg->rsc_mutex);
-		usleep(200);
+		if (philo->arg->must_think_time != -1 && \
+			philo->arg->number_of_philo % 2)
+		{
+			limit = time + philo->arg->must_think_time;
+			if (philo_timer(philo->arg, limit, time, sleep_time) == -1)
+				return ;
+			usleep(200);
+		}
 	}
 	else
 		pthread_mutex_unlock(philo->arg->rsc_mutex);
