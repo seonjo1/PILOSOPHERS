@@ -6,7 +6,7 @@
 /*   By: seonjo <seonjo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 17:32:04 by seonjo            #+#    #+#             */
-/*   Updated: 2023/11/05 17:04:18 by seonjo           ###   ########.fr       */
+/*   Updated: 2023/11/06 11:21:31 by seonjo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,16 @@ void	philo_cycle(t_philo *philo)
 	pthread_mutex_unlock(philo->arg->rsc_mutex);
 }
 
+void	philo_exception_case(t_philo *philo)
+{
+	pthread_mutex_lock(philo->arg->rsc_mutex);
+	philo_print(philo, "is thinking\n");
+	pthread_mutex_unlock(philo->arg->rsc_mutex);
+	philo_hold_fork(philo, philo->philo_num % 2);
+	usleep((philo->arg->time_to_die) * 1000);
+	philo_release_fork(philo, philo->philo_num % 2);
+}
+
 void	philo_action(t_philo *philo)
 {
 	pthread_mutex_lock(philo->arg->start_mutex);
@@ -44,6 +54,11 @@ void	philo_action(t_philo *philo)
 	philo->start = 1;
 	pthread_mutex_unlock(philo->arg->rsc_mutex);
 	pthread_mutex_unlock(philo->arg->start_mutex);
+	if (philo->arg->number_of_philo == 1)
+	{
+		philo_exception_case(philo);
+		return ;
+	}
 	if (philo->philo_num % 2 == 0 || (philo->arg->number_of_philo % 2 == 1 && \
 		philo->philo_num == philo->arg->number_of_philo))
 	{
@@ -55,14 +70,7 @@ void	philo_action(t_philo *philo)
 		else
 			usleep((philo->arg->time_to_die) * 1000);
 	}
-	if (philo->arg->number_of_philo == 1)
-	{
-		philo_hold_fork(philo, philo->philo_num % 2);
-		usleep((philo->arg->time_to_die) * 1000);
-		philo_release_fork(philo, philo->philo_num % 2);
-	}
-	else
-		philo_cycle(philo);
+	philo_cycle(philo);
 }
 
 void	philo_start_philos(t_arg *arg)
