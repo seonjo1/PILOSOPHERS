@@ -26,7 +26,7 @@ deadlock 문제의 대표적인 예시로 거론되는 철학자 식사 문제�
 
 ### 철학자의 행동 패턴
 
-- 철학자는 다음과 같은 행동을 반복한다.
+- 철학자는 다음 행동 패턴을 반복한다.
   - **take a fork (왼손, 오른손 1번씩)**
     - 가능한 경우 포크를 집는다.
     - 옆사람이 포크를 사용중이면 기다린다. (비선점)
@@ -62,7 +62,56 @@ deadlock 문제의 대표적인 예시로 거론되는 철학자 식사 문제�
 
 ### 데드락 방지
 - 어떤 상황에서든 데드락이 발생하지 않도록 만든다.
+  - 모든 철학자가 같은 손에 포크를 1개씩 들어 그 누구도 못 먹는 상황.
 - 데드락의 4조건 중 원형 대기를 없애서 데드락을 피한다.
   - 짝수의 철학자는 왼쪽, 홀수의 철학자는 오른쪽의 포크를 먼저 잡는다.
   - 만약 잡으려는 포크가 사용중이면 반대쪽을 보지 않고 끝까지 기다린다.
   - 이로써 원형 대기가 없어져 절대 데드락이 일어나지 않는다.
+
+## 프로그램 출력
+### TimeStamp ms 에, N 번째 철학자가 특정 행동을 했을때의 출력 포맷
+- **take a fork**
+  ```
+  TimeStamp N has taken a fork 
+  ```
+- **eat**
+  ```
+  TimeStamp N is eating
+  ```
+- **sleep**
+  ```
+  TimeStamp N is sleeping
+  ```
+- **think**
+  ```
+  TimeStamp N is thinking
+  ```
+- **die**
+  ```
+  TimeStamp N died
+  ```
+### 실제 출력
+
+<img width="615" alt="스크린샷 2024-06-26 오후 2 43 47" src="https://github.com/seonjo1/PILOSOPHERS/assets/127729846/6ea13614-cb5e-4096-96ad-c8c696e0113f">
+
+## build
+```
+make
+```
+- philo 프로그램 생성
+```
+make clean
+```
+- philo 생성시 만들어진 .o 파일들 삭제
+```
+make fclean
+```
+- make clean + philo 파일 삭제
+```
+make re
+```
+- make fclean + make
+
+---
+<img width="206" alt="스크린샷 2024-06-26 오후 2 47 27" src="https://github.com/seonjo1/PILOSOPHERS/assets/127729846/ffdb1a85-b7bf-4775-9964-d51b34451697">
+
